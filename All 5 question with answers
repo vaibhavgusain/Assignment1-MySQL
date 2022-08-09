@@ -1,0 +1,126 @@
+-- Create database name as assignment_mysql
+CREATE DATABASE Assignment_mysql;
+
+-- Use database
+USE assignment_mysql;
+
+-- Create table name sales_people inside assignment_mysql (database)
+CREATE TABLE sales_people 
+(Snum INT AUTO_INCREMENT,
+Sname VARCHAR(20) UNIQUE,
+City VARCHAR(20),
+Comm INT,
+PRIMARY KEY (Snum));
+
+desc sales_people;
+
+-- INSERT data in sales_people table 
+
+INSERT INTO sales_people (Snum,Sname,City,Comm) 
+VALUES 
+(1001,'Peel','London',12),
+(1002,'Serres','Sanjose',13),
+(1004,'Motika','London',11),
+(1007,'Rifkin','Barcelona',15),
+(1003,'Axelrod','Newyork',10);
+
+-- Create 2nd table name customers
+SHOW DATABASES;
+USE assignment_mysql;
+CREATE TABLE Customers 
+(Cnum INT AUTO_INCREMENT,
+Cname VARCHAR(20),
+City VARCHAR(20) NOT NULL,
+Snum INT,
+PRIMARY KEY (Cnum),
+FOREIGN KEY (Snum) REFERENCES sales_people(Snum));
+
+
+-- insert data into customers table
+INSERT INTO customers(Cnum, Cname, City, Snum) 
+VALUES
+(2001,'Hoffman','London',1001),
+(2002,'Giovanni','Rome',1003),
+(2003,'Liu','Sanjose',1002),
+(2004,'Grass','Berlin',1002),
+(2006,'Clemens','London',1001),
+(2008,'Cisneros','Sanjose',1007),
+(2007,'Pereira','Rome',1004);
+
+
+-- create 3rd table as Orders
+CREATE TABLE 
+Orders 
+(Onum INT AUTO_INCREMENT,
+Amt DECIMAL(10,2),
+Odate DATE ,
+PRIMARY KEY (Onum),
+Cnum INT,
+FOREIGN KEY (Cnum) REFERENCES customers(Cnum),
+Snum INT,
+FOREIGN KEY (Snum) REFERENCES sales_people(Snum));
+
+DESC orders;
+ 
+
+INSERT INTO orders (Onum, Amt, Odate, Cnum, Snum) 
+VALUES 
+(3001, 18.69  , '1990-10-3', 2008, 1007),
+(3003, 767.19 , '1990-10-3', 2001, 1001),
+(3002, 1900.10, '1990-10-3', 2007, 1004),
+(3005, 5160.45, '1990-10-3', 2003, 1002),
+(3006, 1098.16, '1990-10-3', 2008, 1007),
+(3009, 1713.23, '1990-10-4', 2002, 1003),
+(3007, 75.75  , '1990-10-4', 2004, 1002),
+(3008, 4273.00, '1990-10-5', 2006, 1001),
+(3010, 1309.95, '1990-10-6', 2004, 1002),
+(3011, 9891.88, '1990-10-6', 2006, 1001);
+
+
+
+ -- Count the number of Salesperson whose name begin with ‘a’/’A’.
+ -- Display all the Salesperson whose all orders worth is more than Rs. 2000.
+ -- Count the number of Salesperson belonging to Newyork.
+ -- Display the number of Salespeople belonging to London and belonging to Paris.
+-- Display the number of orders taken by each Salesperson and their date of orders.
+
+-- Answer 1
+SELECT COUNT(*) FROM sales_people
+	
+WHERE Sname LIKE 'a%'
+	OR Sname LIKE 'A%';
+    
+-- Answer 2 
+SELECT sp.sname,
+	   a.amt
+FROM 
+	orders as a
+	inner join	sales_people as sp on a.snum = sp.snum
+WHERE 
+	a.amt > 2000;
+
+SELECT * FROM orders WHERE Amt>2000;
+
+
+-- Answer 3
+SELECT COUNT(*) AS 	Salesperson_belong_to_newyork FROM sales_people
+	WHERE City = 'newyork';
+    
+-- Answer 4 --> Display the number of Salespeople belonging to London and belonging to Paris.
+    SELECT 
+		City,COUNT(*) 
+    FROM 
+		sales_people
+	WHERE 
+		City = 'London' OR City = 'paris';
+    
+    
+    
+ -- Display the number of orders taken by each Salesperson and their date of orders.
+ SELECT sp.Sname,
+		count(*) as number_of_orders ,
+		oo.Odate
+ FROM sales_people as sp
+	inner join orders as oo on oo.Snum = sp.Snum
+group by sp.Sname,
+		 oo.Odate;
